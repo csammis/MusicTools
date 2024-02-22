@@ -1,0 +1,21 @@
+%abc
+
+X:1
+T:Good Omens Opening Theme
+M:3/4
+Q:1/4=196
+Z:csammis
+N:Cribbed from https://musescore.com/user/7649801/scores/5607410
+N:  Note durations at the end of phrases are slightly compressed so that
+N:  the tape fits on a 1.5" diameter cylinder
+K:C ^f ^c ^g
+
+z2 E^D E^D | .E2 .=C2 .A,2 | E,2 .A,2-A,=C | E4  |
+z2 E^D E^D | E2 =F3 =C     | E2 D4-        | D3  |
+z2 DC DC   | .D2 .B,2 .G,2 | E,2 .G,2-G,B, | D4  |
+z2 DC DC   | DE =FE DB,    | D2 =C4-       | C3  |
+z2 AG AG   | .A2 .E2 .C2   | A,2 .C2-CE    | A4  |
+z2 AG AG   | A2 _B3 E      | =G2 =F4-      | =F3 |
+z2 =FE =FE | .=F2 .D2 .B,2 |
+z2 E^D E^D | .E2 .=C2 .A,2 |
+z2 DC DC   | .D2 .B,2 .G,2 | A,6-          | A,6 |
