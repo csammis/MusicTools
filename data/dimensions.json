@@ -1,0 +1,17 @@
+{
+  "combs": [
+    {
+      "name": "18-tooth comb",
+      "tooth_count": 18,
+      "width": 20
+    }
+  ],
+  "drills": {
+    "diameter": 0.5,
+    "spacing": 0.2
+  },
+  "drawing": {
+      "horizontal_offset": 5,
+      "vertical_offset": 5
+  }
+}

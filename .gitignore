@@ -1,0 +1,10 @@
+.vscode
+.DS_Store
+
+.venv
+__pycache__
+
+*.svg
+
+*.stl
+*.FCStd1
