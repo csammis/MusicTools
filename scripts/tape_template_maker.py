@@ -71,7 +71,7 @@ if __name__ == "__main__":
     print(f"The range of {path.name} ({scale_range} steps) exceeds the comb's tooth count ({cmdline.tooth_count}).")
     print(f"Should we: Proceed anyway, or Cancel")
     choice = input(f"P C --> ")
-    if choice.lower() == "C":
+    if choice.strip().lower() == "c":
       proceed = False
   
   if proceed is False:
