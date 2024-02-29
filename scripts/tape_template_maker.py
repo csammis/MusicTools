@@ -77,7 +77,11 @@ if __name__ == "__main__":
   if proceed is False:
     sys.exit()
 
-  with open("../data/dimensions.json", "r") as f:
+  script_path = Path(__file__).parent
+  data_file_path = script_path.parent.joinpath("data/dimensions.json")
+  output_path = path.parent.joinpath(path.stem + ".svg")
+
+  with open(data_file_path, "r") as f:
     dimension_data = json.load(f)
 
   distance_per_beat = dimension_data["drills"]["diameter"] + dimension_data["drills"]["spacing"]
@@ -99,6 +103,6 @@ if __name__ == "__main__":
   print(f"\t...{total_duration} beats")
   print(f"\t...for a tape length of {round(tape_length, 2)} mm")
   diameter_mm = tape_length / math.pi
-  print(f"\t...and a minimum cylinder diameter of {round(diameter_mm, 2)} mm / {round(diameter_mm / 25.4, 2)}\"") 
+  print(f"\t...and a minimum cylinder diameter of {round(diameter_mm, 2)} mm / {round(diameter_mm / 25.4, 2)}\"")
 
-  gen_svg(input_file.music, Path("Test.svg"), dimension_data=dimension_data)
+  gen_svg(input_file.music, output_path, dimension_data=dimension_data)
