@@ -9,7 +9,7 @@ import json
 import math
 import svgwrite
 
-def gen_svg(music: List[MusicObject], file: Path, dimension_data) -> None:
+def gen_svg(music: List[MusicObject], file: Path, copies: int, dimension_data) -> None:
   music_duration = sum([x.duration for x in music])
 
   drill_diameter = dimension_data["drills"]["diameter"]
@@ -24,31 +24,37 @@ def gen_svg(music: List[MusicObject], file: Path, dimension_data) -> None:
   vertical_offset = dimension_data["drawing"]["vertical_offset"]
   horizontal_offset = dimension_data["drawing"]["horizontal_offset"]
 
-  svg_width = total_width + 5 + horizontal_offset
+  stave_width = total_width + horizontal_offset * 2
+  stave_count = copies
+
+  svg_width = stave_width * stave_count
   svg_height = tape_length + 5 + vertical_offset
 
   template = svgwrite.Drawing(file, size=(f"{svg_width}mm", f"{svg_height}mm"),
                               viewBox=f"0 0 {svg_width} {svg_height}")
+  
+  for j in range(stave_count):
+    stave_left = stave_width * j
+    
+    # Draw a stave with one line for each tooth
+    for i in range(tooth_count):
+      start_x = stave_left + striker_offset + (i * tooth_width) + horizontal_offset
+      template.add(template.line(start=(start_x,0), end=(start_x, tape_length + vertical_offset),
+                                stroke_width="0.1", stroke="black"))
 
-  # Draw a stave with one line for each tooth
-  for i in range(tooth_count):
-    start_x = striker_offset + (i * tooth_width) + horizontal_offset
-    template.add(template.line(start=(start_x,0), end=(start_x, tape_length + vertical_offset),
-                               stroke_width="0.1", stroke="black"))
+    notes = [n for n in music if n.name.lower() != "rest"]
+    def note_value_x(note: Note) -> int:
+      note_position = tooth_count - (note.value - min(notes).value) - 1
+      return stave_left + striker_offset + (note_position * tooth_width) + horizontal_offset
 
-  notes = [n for n in music if n.name.lower() != "rest"]
-  def note_value_x(note: Note) -> int:
-    note_position = tooth_count - (note.value - min(notes).value) - 1
-    return striker_offset + (note_position * tooth_width) + horizontal_offset
-
-  # Draw a drill mark corresponding to each note
-  current_beat = 0
-  for i in range(len(music)):
-    if music[i].name.lower() != "rest":
-      x = note_value_x(music[i])
-      y = vertical_offset + (current_beat * distance_per_beat)
-      template.add(template.circle(center=(x, y), r=drill_diameter / 2, fill="black"))
-    current_beat = current_beat + music[i].duration
+    # Draw a drill mark corresponding to each note
+    current_beat = 0
+    for i in range(len(music)):
+      if music[i].name.lower() != "rest":
+        x = note_value_x(music[i])
+        y = vertical_offset + (current_beat * distance_per_beat)
+        template.add(template.circle(center=(x, y), r=drill_diameter / 2, fill="black"))
+      current_beat = current_beat + music[i].duration
 
   template.save(pretty=True)
 
@@ -56,6 +62,7 @@ if __name__ == "__main__":
   parser = argparse.ArgumentParser(usage="Create an SVG file for drilling the cylinder of a music box")
   parser.add_argument("--tooth-count", default=18, help="The number of teeth on the music box's comb")
   parser.add_argument("--file", help="The input file containing music notation in ABC format", required=True)
+  parser.add_argument("--copies", default=3, help="The number of tape templates to output in the SVG")
   cmdline = parser.parse_args()
 
   path = Path(cmdline.file)
@@ -106,4 +113,4 @@ if __name__ == "__main__":
   diameter_mm = tape_length / math.pi
   print(f"\t...and a minimum cylinder diameter of {round(diameter_mm, 2)} mm / {round(diameter_mm / 25.4, 2)}\"")
 
-  gen_svg(input_file.music, output_path, dimension_data=dimension_data)
+  gen_svg(input_file.music, output_path, copies=int(cmdline.copies), dimension_data=dimension_data)
