@@ -38,7 +38,8 @@ def gen_svg(music: List[MusicObject], file: Path, dimension_data) -> None:
 
   notes = [n for n in music if n.name.lower() != "rest"]
   def note_value_x(note: Note) -> int:
-    return striker_offset + (note.value - min(notes).value) * tooth_width + horizontal_offset
+    note_position = tooth_count - (note.value - min(notes).value) - 1
+    return striker_offset + (note_position * tooth_width) + horizontal_offset
 
   # Draw a drill mark corresponding to each note
   current_beat = 0
