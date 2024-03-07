@@ -106,7 +106,7 @@ class AbcFile:
 def strip_decorators(content: str) -> str:
   """ Strip out unused constructs from the content """
   # Keep characters from timing constructs (rests, note lengths, ties) and pitches
-  content = re.sub("[^a-zA-Z0-9\s\/\-\^_,'=]", "", content)
+  content = re.sub("[^a-zA-Z0-9\s\/\-\^_,'=\[\]]", "", content)
   # Normalize spaces
   content = re.sub(" +", " ", content)
   # Join ties with whatever followed after decorators were removed
@@ -155,15 +155,26 @@ def ParseAbcFile(input: Path) -> AbcFile:
 
   music: List[MusicObject] = []
   detect_tie = False
-  for m in re.finditer("([\^=_]*?)([a-zA-Z][,']?)([0-9]?)(-?)", music_content):
-    if len(m.group(1)) > 0:
-      accidental = Accidental(m.group(1))
+  detect_chord = False
+
+  for m in re.finditer("""
+                       (?P<chord_start>  \[?)            # Is there a chord start?
+                       (?P<accidentals>  [\^=_]*?)       # Any number of accidentals
+                       (?P<name>         [a-zA-Z][,']?)  # The name of the note with octave markers
+                       (?P<duration>      [0-9]?)        # Duration
+                       (?P<chord_end>     \]?)           # Is there a chord end?
+                       (?P<tie>           -?)            # Is there a tie?
+                       """, music_content, flags=re.VERBOSE):
+    if len(m.group("accidentals")) > 0:
+      accidental = Accidental(m.group("accidentals"))
     else:
       accidental = None
-    if m.group(2).lower() in ["z", "x"]:
-      music.append(Rest(duration=m.group(3)))
+    name = m.group("name")
+    duration = m.group("duration")
+    if name.lower() in ["z", "x"]:
+      music.append(Rest(duration=duration))
     else:
-      music.append(Note(m.group(2), accidental=accidental, duration=m.group(3)))
+      music.append(Note(name, accidental=accidental, duration=duration))
     
     if detect_tie:
       if music[-2].name == music[-1].name:
@@ -173,6 +184,15 @@ def ParseAbcFile(input: Path) -> AbcFile:
         music = music[:-1]
       detect_tie = False
 
-    detect_tie = m.group(4) != ""
+    detect_tie = m.group("tie") != ""
+
+    if detect_chord:
+      # If the parser is in the middle of a chord then the duration of the latest note is zeroed out.
+      # The note itself remains in the list but it doesn't contribute to overall duration of the tune.
+      music[-1].duration = 0
+      detect_chord = m.group("chord_end") == ""
+    else:
+      detect_chord = m.group("chord_start") != ""
+
 
   return AbcFile(fields, music)

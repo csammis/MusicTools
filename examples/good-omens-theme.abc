@@ -10,7 +10,7 @@ N:  Note durations at the end of phrases are slightly compressed so that
 N:  the tape fits on a 1.5" diameter cylinder
 K:C ^f ^c ^g
 
-z2 E^D E^D | .E2 .=C2 .A,2 | E,2 .A,2-A,=C | E4  |
+z2 [ECA,]^D E^D | .E2 .=C2 .A,2 | E,2 .A,2-A,=C | E4  |
 z2 E^D E^D | E2 =F3 =C     | E2 D4-        | D3  |
 z2 DC DC   | .D2 .B,2 .G,2 | E,2 .G,2-G,B, | D4  |
 z2 DC DC   | DE =FE DB,    | D2 =C4-       | C3  |

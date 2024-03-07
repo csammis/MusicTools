@@ -52,7 +52,8 @@ def gen_svg(music: List[MusicObject], file: Path, copies: int, dimension_data) -
     for i in range(len(music)):
       if music[i].name.lower() != "rest":
         x = note_value_x(music[i])
-        y = vertical_offset + (current_beat * distance_per_beat)
+        if music[i].duration != 0:
+          y = vertical_offset + (current_beat * distance_per_beat)
         template.add(template.circle(center=(x, y), r=drill_diameter / 2, fill="black"))
       current_beat = current_beat + music[i].duration
 
